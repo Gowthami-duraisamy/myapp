@@ -10,29 +10,33 @@ function App() {
   const [editIndex, setEditIndex] = useState(null);
 
   const columns = useMemo(
-    () => [
-      { Header: "S.No", accessor: "id" },
-      { Header: "Name", accessor: "name" },
-      { Header: "Email", accessor: "email" },
-      {
-        Header: "Edit",
-        Cell: ({ row }) => (
-          <button className="edit-btn" onClick={() => handleEdit(row.original)}>
-            Edit
-          </button>
-        ),
-      },
-      {
-        Header: "Delete",
-        Cell: ({ row }) => (
-          <button className="delete-btn" onClick={() => handleDelete(row.original.id -1)}>
-            Delete
-          </button>
-        ),
-      },
-    ],
-    []
-  );
+  () => [
+    { Header: "S.No", accessor: "id" },
+    { Header: "Name", accessor: "name" },
+    { Header: "Email", accessor: "email" },
+    {
+      Header: "Edit",
+      Cell: ({ row }) => (
+        <button className="edit-btn" onClick={() => handleEdit(row.original)}>
+          Edit
+        </button>
+      ),
+    },
+    {
+      Header: "Delete",
+      Cell: ({ row }) => (
+        <button
+          className="delete-btn"
+          onClick={() => handleDelete(row.original.id - 1)}
+        >
+          Delete
+        </button>
+      ),
+    },
+  ],
+  [handleEdit, handleDelete]
+);
+
 
   const tableInstance = useTable({ columns, data });
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
