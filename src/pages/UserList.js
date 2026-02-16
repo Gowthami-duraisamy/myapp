@@ -9,38 +9,17 @@ function App() {
   const [email, setEmail] = useState("");
   const [editIndex, setEditIndex] = useState(null);
 
-  const columns = useMemo(
-  () => [
-    { Header: "S.No", accessor: "id" },
-    { Header: "Name", accessor: "name" },
-    { Header: "Email", accessor: "email" },
-    {
-      Header: "Edit",
-      Cell: ({ row }) => (
-        <button className="edit-btn" onClick={() => handleEdit(row.original)}>
-          Edit
-        </button>
-      ),
-    },
-    {
-      Header: "Delete",
-      Cell: ({ row }) => (
-        <button
-          className="delete-btn"
-          onClick={() => handleDelete(row.original.id - 1)}
-        >
-          Delete
-        </button>
-      ),
-    },
-  ],
-  [handleEdit, handleDelete]
-);
+  // ✅ DEFINE FUNCTIONS FIRST
+  const handleEdit = (user) => {
+    setName(user.name);
+    setEmail(user.email);
+    setEditIndex(user.id - 1);
+    setShowForm(true);
+  };
 
-
-  const tableInstance = useTable({ columns, data });
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
+  const handleDelete = (index) => {
+    setData((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSave = () => {
     if (!name || !email) return alert("Fill all fields");
@@ -59,17 +38,41 @@ function App() {
     setShowForm(false);
   };
 
-  const handleEdit = (user) => {
-  setName(user.name);
-  setEmail(user.email);
-  setEditIndex(user.id - 1);
-  setShowForm(true);
-};
+  // ✅ NOW useMemo (after functions exist)
+  const columns = useMemo(
+    () => [
+      { Header: "S.No", accessor: "id" },
+      { Header: "Name", accessor: "name" },
+      { Header: "Email", accessor: "email" },
+      {
+        Header: "Edit",
+        Cell: ({ row }) => (
+          <button
+            className="edit-btn"
+            onClick={() => handleEdit(row.original)}
+          >
+            Edit
+          </button>
+        ),
+      },
+      {
+        Header: "Delete",
+        Cell: ({ row }) => (
+          <button
+            className="delete-btn"
+            onClick={() => handleDelete(row.original.id - 1)}
+          >
+            Delete
+          </button>
+        ),
+      },
+    ],
+    [handleEdit, handleDelete]
+  );
 
-
-  const handleDelete = (index) => {
-    setData(data.filter((_, i) => i !== index));
-  };
+  const tableInstance = useTable({ columns, data });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    tableInstance;
 
   return (
     <div className="container">
@@ -79,7 +82,6 @@ function App() {
         Add
       </button>
 
-      {/* Popup */}
       {showForm && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -98,7 +100,10 @@ function App() {
               <button className="save-btn" onClick={handleSave}>
                 {editIndex !== null ? "Update" : "Save"}
               </button>
-              <button className="cancel-btn" onClick={() => setShowForm(false)}>
+              <button
+                className="cancel-btn"
+                onClick={() => setShowForm(false)}
+              >
                 Cancel
               </button>
             </div>
@@ -112,7 +117,9 @@ function App() {
             {headerGroups.map((hg) => (
               <tr {...hg.getHeaderGroupProps()}>
                 {hg.headers.map((col) => (
-                  <th {...col.getHeaderProps()}>{col.render("Header")}</th>
+                  <th {...col.getHeaderProps()}>
+                    {col.render("Header")}
+                  </th>
                 ))}
               </tr>
             ))}
@@ -124,7 +131,9 @@ function App() {
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <td {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </td>
                   ))}
                 </tr>
               );
