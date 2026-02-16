@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useTable } from "react-table";
 import "../App.css";
 
@@ -9,19 +9,25 @@ function App() {
   const [email, setEmail] = useState("");
   const [editIndex, setEditIndex] = useState(null);
 
-  // ✅ DEFINE FUNCTIONS FIRST
-  const handleEdit = (user) => {
-    setName(user.name);
-    setEmail(user.email);
-    setEditIndex(user.id - 1);
-    setShowForm(true);
-  };
+  // ✅ Memoize functions
+  const handleEdit = useCallback(
+    (user) => {
+      setName(user.name);
+      setEmail(user.email);
+      setEditIndex(user.id - 1);
+      setShowForm(true);
+    },
+    [] // no dependencies
+  );
 
-  const handleDelete = (index) => {
-    setData((prev) => prev.filter((_, i) => i !== index));
-  };
+  const handleDelete = useCallback(
+    (index) => {
+      setData((prev) => prev.filter((_, i) => i !== index));
+    },
+    [] // no dependencies
+  );
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!name || !email) return alert("Fill all fields");
 
     if (editIndex !== null) {
@@ -36,9 +42,8 @@ function App() {
     setName("");
     setEmail("");
     setShowForm(false);
-  };
+  }, [name, email, editIndex, data]);
 
-  // ✅ NOW useMemo (after functions exist)
   const columns = useMemo(
     () => [
       { Header: "S.No", accessor: "id" },
@@ -47,10 +52,7 @@ function App() {
       {
         Header: "Edit",
         Cell: ({ row }) => (
-          <button
-            className="edit-btn"
-            onClick={() => handleEdit(row.original)}
-          >
+          <button className="edit-btn" onClick={() => handleEdit(row.original)}>
             Edit
           </button>
         ),
@@ -67,7 +69,7 @@ function App() {
         ),
       },
     ],
-    [handleEdit, handleDelete]
+    [handleEdit, handleDelete] // ✅ dependencies are now stable
   );
 
   const tableInstance = useTable({ columns, data });
@@ -100,10 +102,7 @@ function App() {
               <button className="save-btn" onClick={handleSave}>
                 {editIndex !== null ? "Update" : "Save"}
               </button>
-              <button
-                className="cancel-btn"
-                onClick={() => setShowForm(false)}
-              >
+              <button className="cancel-btn" onClick={() => setShowForm(false)}>
                 Cancel
               </button>
             </div>
@@ -117,9 +116,7 @@ function App() {
             {headerGroups.map((hg) => (
               <tr {...hg.getHeaderGroupProps()}>
                 {hg.headers.map((col) => (
-                  <th {...col.getHeaderProps()}>
-                    {col.render("Header")}
-                  </th>
+                  <th {...col.getHeaderProps()}>{col.render("Header")}</th>
                 ))}
               </tr>
             ))}
@@ -131,9 +128,7 @@ function App() {
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </td>
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   ))}
                 </tr>
               );

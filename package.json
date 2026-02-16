@@ -2,7 +2,7 @@
   "name": "myapp",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://gowthami-duraisamy.github.io/myapp",
+  "homepage": ".",
 
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
